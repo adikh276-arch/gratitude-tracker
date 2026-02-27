@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { todayISO } from "@/lib/gratitudeStore";
 
 const GratitudeEntry = () => {
   const navigate = useNavigate();
-  const [gratitude1, setGratitude1] = useState("");
-  const [gratitude2, setGratitude2] = useState("");
+  const location = useLocation();
+  const editState = location.state as any;
+  const [gratitude1, setGratitude1] = useState(editState?.gratitude1 || "");
+  const [gratitude2, setGratitude2] = useState(editState?.gratitude2 || "");
 
   const canContinue = gratitude1.trim().length > 0;
 
