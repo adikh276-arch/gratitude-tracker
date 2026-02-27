@@ -19,6 +19,7 @@ const GratitudeEntry = () => {
         gratitude1: gratitude1.trim(),
         gratitude2: gratitude2.trim() || undefined,
         date: todayISO(),
+        editId: editState?.editId,
       },
     });
   };
