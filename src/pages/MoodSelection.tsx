@@ -47,10 +47,9 @@ const MoodSelection = () => {
 
   return (
     <PageTransition>
-      <div className="flex flex-col min-h-screen bg-background px-5 pt-12 pb-28">
+      <div className="flex flex-col min-h-screen bg-background px-5 pt-12 pb-28 max-w-md mx-auto w-full text-justify">
         <header className="mb-8">
-          <p className="text-sm font-medium text-muted-foreground mb-1">MantraCare</p>
-          <h1 className="text-2xl font-heading font-semibold text-foreground">
+          <h1 className="text-2xl font-heading font-semibold text-foreground text-left">
             How are you feeling?
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
