@@ -23,6 +23,11 @@ export default defineConfig(({ mode }) => ({
       },
     }),
   ],
+  define: {
+    "import.meta.env.VITE_DATABASE_URL": JSON.stringify(process.env.VITE_DATABASE_URL),
+    "import.meta.env.VITE_NEON_PROJECT_ID": JSON.stringify(process.env.VITE_NEON_PROJECT_ID),
+    "import.meta.env.VITE_NEON_API_KEY": JSON.stringify(process.env.VITE_NEON_API_KEY),
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

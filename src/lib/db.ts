@@ -1,9 +1,13 @@
 import { Pool } from "@neondatabase/serverless";
 
-const connectionString = import.meta.env.VITE_DATABASE_URL;
+const getEnv = (key: string) => {
+    return import.meta.env[key] || (window as any).ENV?.[key] || "";
+};
+
+const connectionString = getEnv("VITE_DATABASE_URL");
 
 if (!connectionString) {
-    console.error("CRITICAL: VITE_DATABASE_URL is missing! Database operations will fail.");
+    console.error("CRITICAL: VITE_DATABASE_URL is missing! Ensure it is set in GitHub Secrets (build-time) or Environment Variables (runtime).");
 }
 
 export const pool = new Pool({
