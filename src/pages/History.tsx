@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/PageTransition";
 import {
   getEntriesForMonth,
@@ -21,6 +22,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const History = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedEntry, setSelectedEntry] = useState<GratitudeEntry | null>(null);
@@ -57,7 +59,7 @@ const History = () => {
       <div className="flex flex-col min-h-screen bg-background px-5 pt-12 pb-28 max-w-md mx-auto w-full text-justify">
         <header className="mb-6">
           <h1 className="text-2xl font-heading font-semibold text-foreground text-left">
-            History
+            {t("history.heading")}
           </h1>
         </header>
 
@@ -85,7 +87,7 @@ const History = () => {
           <div className="grid grid-cols-7 gap-1 mb-2">
             {WEEKDAYS.map((d) => (
               <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">
-                {d}
+                {t(`history.${d.toLowerCase()}`)}
               </div>
             ))}
           </div>
@@ -104,13 +106,12 @@ const History = () => {
                   key={iso}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handleDateTap(day)}
-                  className={`relative aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isSelected
+                  className={`relative aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${isSelected
                       ? "bg-primary text-primary-foreground"
                       : isToday
-                      ? "bg-muted text-foreground"
-                      : "text-foreground hover:bg-muted/60"
-                  }`}
+                        ? "bg-muted text-foreground"
+                        : "text-foreground hover:bg-muted/60"
+                    }`}
                 >
                   {day.getDate()}
                   {hasEntry && !isSelected && (
@@ -139,16 +140,16 @@ const History = () => {
                 </p>
                 <div className="flex items-center gap-1.5 bg-muted px-3 py-1 rounded-pill">
                   <span className="text-lg">{selectedEntry.mood.emoji}</span>
-                  <span className="text-xs font-medium text-foreground">{selectedEntry.mood.label}</span>
+                  <span className="text-xs font-medium text-foreground">{t(`mood.${selectedEntry.mood.label.toLowerCase()}`)}</span>
                 </div>
               </div>
               <div>
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Gratitude 1</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{t("review.gratitude1")}</p>
                 <p className="text-sm text-foreground leading-relaxed">{selectedEntry.gratitude1}</p>
               </div>
               {selectedEntry.gratitude2 && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Gratitude 2</p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">{t("review.gratitude2")}</p>
                   <p className="text-sm text-foreground leading-relaxed">{selectedEntry.gratitude2}</p>
                 </div>
               )}
@@ -163,13 +164,13 @@ const History = () => {
               onClick={() => navigate(-1)}
               className="flex-1 h-[52px] rounded-pill border-2 border-secondary text-foreground font-heading font-medium text-base transition-all duration-200 active:scale-[0.98] hover:bg-secondary/30"
             >
-              Back
+              {t("history.back")}
             </button>
             <button
               onClick={() => navigate("/")}
               className="flex-1 h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 active:scale-[0.98] hover:brightness-105"
             >
-              Go to Home
+              {t("history.home")}
             </button>
           </div>
         </div>

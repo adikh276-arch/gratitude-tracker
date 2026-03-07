@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/PageTransition";
 import { todayISO } from "@/lib/gratitudeStore";
 
 const GratitudeEntry = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const editState = location.state as any;
@@ -29,22 +31,22 @@ const GratitudeEntry = () => {
       <div className="flex flex-col min-h-screen bg-background px-5 pt-12 pb-28 max-w-md mx-auto w-full text-justify">
         <header className="mb-8">
           <h1 className="text-2xl font-heading font-semibold text-foreground text-left">
-            What are you grateful for today?
+            {t("gratitude.heading")}
           </h1>
           <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-            Take a moment to reflect on the good things, big or small.
+            {t("gratitude.subheading")}
           </p>
         </header>
 
         <div className="space-y-6 flex-1">
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Gratitude Item 1 <span className="text-primary">*</span>
+              {t("gratitude.item1.label")} <span className="text-primary">*</span>
             </label>
             <textarea
               value={gratitude1}
               onChange={(e) => setGratitude1(e.target.value)}
-              placeholder="e.g. A warm cup of tea this morning..."
+              placeholder={t("gratitude.item1.placeholder")}
               rows={4}
               className="w-full bg-card text-foreground rounded-lg border border-border px-4 py-3 text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200 resize-none shadow-soft"
             />
@@ -52,12 +54,12 @@ const GratitudeEntry = () => {
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
-              Gratitude Item 2 <span className="text-muted-foreground text-xs">(optional)</span>
+              {t("gratitude.item2.label")} <span className="text-muted-foreground text-xs">{t("gratitude.optional")}</span>
             </label>
             <textarea
               value={gratitude2}
               onChange={(e) => setGratitude2(e.target.value)}
-              placeholder="e.g. A kind word from a friend..."
+              placeholder={t("gratitude.item2.placeholder")}
               rows={4}
               className="w-full bg-card text-foreground rounded-lg border border-border px-4 py-3 text-sm font-body placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all duration-200 resize-none shadow-soft"
             />
@@ -71,7 +73,7 @@ const GratitudeEntry = () => {
             disabled={!canContinue}
             className="w-full h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-105"
           >
-            Continue
+            {t("common.continue")}
           </button>
         </div>
       </div>

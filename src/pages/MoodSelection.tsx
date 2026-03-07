@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import PageTransition from "@/components/PageTransition";
 import { MOODS, MoodOption, saveEntry, todayISO } from "@/lib/gratitudeStore";
 import { v4 } from "@/lib/uid";
@@ -22,6 +23,7 @@ const moodBgsSelected = [
 ];
 
 const MoodSelection = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { gratitude1, gratitude2, date, editId } = (location.state as any) || {};
@@ -50,10 +52,10 @@ const MoodSelection = () => {
       <div className="flex flex-col min-h-screen bg-background px-5 pt-12 pb-28 max-w-md mx-auto w-full text-justify">
         <header className="mb-8">
           <h1 className="text-2xl font-heading font-semibold text-foreground text-left">
-            How are you feeling?
+            {t("mood.heading")}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Select the mood that best describes you right now.
+            {t("mood.subheading")}
           </p>
         </header>
 
@@ -68,12 +70,11 @@ const MoodSelection = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.07, duration: 0.35 }}
-                className={`w-full flex items-center gap-4 px-5 py-4 rounded-lg transition-all duration-300 ${
-                  isSelected ? moodBgsSelected[i] : moodBgs[i]
-                }`}
+                className={`w-full flex items-center gap-4 px-5 py-4 rounded-lg transition-all duration-300 ${isSelected ? moodBgsSelected[i] : moodBgs[i]
+                  }`}
               >
                 <span className="text-3xl">{mood.emoji}</span>
-                <span className="text-base font-medium text-foreground">{mood.label}</span>
+                <span className="text-base font-medium text-foreground">{t(`mood.${mood.label.toLowerCase()}`)}</span>
               </motion.button>
             );
           })}
@@ -85,7 +86,7 @@ const MoodSelection = () => {
             disabled={!selected}
             className="w-full h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-105"
           >
-            Save Gratitude Entry
+            {t("mood.save")}
           </button>
         </div>
       </div>

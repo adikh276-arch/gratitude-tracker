@@ -10,6 +10,8 @@ import ReviewEntry from "./pages/ReviewEntry";
 import History from "./pages/History";
 import NotFound from "./pages/NotFound";
 
+import { LanguageSelector } from "./components/LanguageSelector";
+
 const queryClient = new QueryClient();
 
 const AnimatedRoutes = () => {
@@ -30,9 +32,10 @@ const AnimatedRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <LanguageSelector />
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename="/gratitude_tracker">
         <AnimatedRoutes />
       </BrowserRouter>
     </TooltipProvider>
