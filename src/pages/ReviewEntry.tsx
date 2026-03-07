@@ -81,17 +81,17 @@ const ReviewEntry = () => {
           </div>
         </motion.div>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md px-5 py-4 safe-bottom border-t border-border/50">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background/80 backdrop-blur-md px-5 py-4 safe-bottom border-t border-border/50 z-10">
           <div className="flex gap-3">
             <button
               onClick={handleEdit}
-              className="flex-1 h-[52px] rounded-pill border-2 border-secondary text-foreground font-heading font-medium text-base transition-all duration-200 active:scale-[0.98] hover:bg-secondary/30"
+              className="flex-1 h-[52px] rounded-pill border-2 border-secondary text-foreground font-heading font-medium text-base transition-all duration-200 active:scale-[0.98] hover:bg-secondary/30 shadow-sm"
             >
               {t("review.edit")}
             </button>
             <button
               onClick={() => navigate("/history")}
-              className="flex-1 h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 active:scale-[0.98] hover:brightness-105"
+              className="flex-1 h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 active:scale-[0.98] hover:brightness-105 shadow-md"
             >
               {t("review.history")}
             </button>

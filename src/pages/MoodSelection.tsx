@@ -80,11 +80,11 @@ const MoodSelection = () => {
           })}
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md px-5 py-4 safe-bottom border-t border-border/50">
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background/80 backdrop-blur-md px-5 py-4 safe-bottom border-t border-border/50 z-10">
           <button
             onClick={handleSave}
             disabled={!selected}
-            className="w-full h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-105"
+            className="w-full h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-105 shadow-md"
           >
             {t("mood.save")}
           </button>
