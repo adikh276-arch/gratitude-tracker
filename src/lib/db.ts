@@ -1,10 +1,10 @@
-import { Pool } from "pg";
+import { Pool, neonConfig } from "@neondatabase/serverless";
+
+// Optional: you can set this if needed, but it should work automatically in browsers
+// neonConfig.wsProxy = ...
 
 export const pool = new Pool({
     connectionString: import.meta.env.VITE_DATABASE_URL || process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    },
 });
 
 export const query = (text: string, params?: any[]) => {
