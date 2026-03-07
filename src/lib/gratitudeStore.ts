@@ -1,3 +1,5 @@
+import { query } from "./db";
+
 export interface GratitudeEntry {
   id: string;
   date: string; // ISO date string YYYY-MM-DD
@@ -19,35 +21,94 @@ export const MOODS: MoodOption[] = [
   { emoji: "😣", label: "Stressed" },
 ];
 
-const STORAGE_KEY = "mantracare-gratitude";
+const getUserId = () => sessionStorage.getItem("user_id");
 
-export function saveEntry(entry: GratitudeEntry): void {
-  const entries = getAllEntries();
-  const existingIndex = entries.findIndex((e) => e.id === entry.id);
-  if (existingIndex >= 0) {
-    entries[existingIndex] = entry;
+export async function saveEntry(entry: GratitudeEntry): Promise<void> {
+  const userId = getUserId();
+  if (!userId) throw new Error("Unauthorized");
+
+  const existing = await getEntryById(entry.id);
+
+  if (existing) {
+    await query(
+      "UPDATE gratitude_entries SET gratitude1 = $1, gratitude2 = $2, mood_emoji = $3, mood_label = $4 WHERE id = $5 AND user_id = $6",
+      [entry.gratitude1, entry.gratitude2 || null, entry.mood.emoji, entry.mood.label, entry.id, userId]
+    );
   } else {
-    entries.push(entry);
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-}
-
-export function getAllEntries(): GratitudeEntry[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+    await query(
+      "INSERT INTO gratitude_entries (id, user_id, date, gratitude1, gratitude2, mood_emoji, mood_label) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+      [entry.id, userId, entry.date, entry.gratitude1, entry.gratitude2 || null, entry.mood.emoji, entry.mood.label]
+    );
   }
 }
 
-export function getEntryByDate(date: string): GratitudeEntry | undefined {
-  return getAllEntries().find((e) => e.date === date);
+export async function getAllEntries(): Promise<GratitudeEntry[]> {
+  const userId = getUserId();
+  if (!userId) return [];
+
+  const result = await query("SELECT * FROM gratitude_entries WHERE user_id = $1 ORDER BY date DESC", [userId]);
+  return result.rows.map(row => ({
+    id: row.id,
+    date: row.date.toISOString().split("T")[0],
+    gratitude1: row.gratitude1,
+    gratitude2: row.gratitude2,
+    mood: { emoji: row.mood_emoji, label: row.mood_label }
+  }));
 }
 
-export function getEntriesForMonth(year: number, month: number): GratitudeEntry[] {
-  const prefix = `${year}-${String(month + 1).padStart(2, "0")}`;
-  return getAllEntries().filter((e) => e.date.startsWith(prefix));
+export async function getEntryById(id: string): Promise<GratitudeEntry | undefined> {
+  const userId = getUserId();
+  if (!userId) return undefined;
+
+  const result = await query("SELECT * FROM gratitude_entries WHERE id = $1 AND user_id = $2", [id, userId]);
+  if (result.rows.length === 0) return undefined;
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    date: row.date.toISOString().split("T")[0],
+    gratitude1: row.gratitude1,
+    gratitude2: row.gratitude2,
+    mood: { emoji: row.mood_emoji, label: row.mood_label }
+  };
+}
+
+export async function getEntryByDate(date: string): Promise<GratitudeEntry | undefined> {
+  const userId = getUserId();
+  if (!userId) return undefined;
+
+  const result = await query("SELECT * FROM gratitude_entries WHERE date = $1 AND user_id = $2", [date, userId]);
+  if (result.rows.length === 0) return undefined;
+
+  const row = result.rows[0];
+  return {
+    id: row.id,
+    date: row.date.toISOString().split("T")[0],
+    gratitude1: row.gratitude1,
+    gratitude2: row.gratitude2,
+    mood: { emoji: row.mood_emoji, label: row.mood_label }
+  };
+}
+
+export async function getEntriesForMonth(year: number, month: number): Promise<GratitudeEntry[]> {
+  const userId = getUserId();
+  if (!userId) return [];
+
+  const startDate = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+  const endDate = `${year}-${String(month + 1).padStart(2, "0")}-31`;
+
+  const result = await query(
+    "SELECT * FROM gratitude_entries WHERE user_id = $1 AND date >= $2 AND date <= $3 ORDER BY date ASC",
+    [userId, startDate, endDate]
+  );
+
+  return result.rows.map(row => ({
+    id: row.id,
+    date: row.date.toISOString().split("T")[0],
+    gratitude1: row.gratitude1,
+    gratitude2: row.gratitude2,
+    mood: { emoji: row.mood_emoji, label: row.mood_label }
+  }));
 }
 
 export function todayISO(): string {

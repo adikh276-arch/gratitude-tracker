@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -26,11 +26,26 @@ const History = () => {
   const navigate = useNavigate();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedEntry, setSelectedEntry] = useState<GratitudeEntry | null>(null);
+  const [entries, setEntries] = useState<GratitudeEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const year = currentMonth.getFullYear();
   const month = currentMonth.getMonth();
 
-  const entries = useMemo(() => getEntriesForMonth(year, month), [year, month]);
+  useEffect(() => {
+    const fetchEntries = async () => {
+      setIsLoading(true);
+      try {
+        const data = await getEntriesForMonth(year, month);
+        setEntries(data);
+      } catch (error) {
+        console.error("Fetch history error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEntries();
+  }, [year, month]);
 
   const entryDates = useMemo(() => {
     const map = new Map<string, GratitudeEntry>();
@@ -83,44 +98,52 @@ const History = () => {
         </div>
 
         {/* Calendar grid */}
-        <div className="bg-card rounded-lg shadow-card p-4 mb-5">
-          <div className="grid grid-cols-7 gap-1 mb-2">
-            {WEEKDAYS.map((d) => (
-              <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">
-                {t(`history.${d.toLowerCase()}`)}
+        <div className="bg-card rounded-lg shadow-card p-4 mb-5 min-h-[300px] flex flex-col">
+          {isLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {WEEKDAYS.map((d) => (
+                  <div key={d} className="text-center text-xs font-medium text-muted-foreground py-1">
+                    {t(`history.${d.toLowerCase()}`)}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-7 gap-1">
-            {Array.from({ length: startDayOfWeek }).map((_, i) => (
-              <div key={`empty-${i}`} />
-            ))}
-            {days.map((day) => {
-              const iso = format(day, "yyyy-MM-dd");
-              const hasEntry = entryDates.has(iso);
-              const isToday = isSameDay(day, new Date());
-              const isSelected = selectedEntry?.date === iso;
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: startDayOfWeek }).map((_, i) => (
+                  <div key={`empty-${i}`} />
+                ))}
+                {days.map((day) => {
+                  const iso = format(day, "yyyy-MM-dd");
+                  const hasEntry = entryDates.has(iso);
+                  const isToday = isSameDay(day, new Date());
+                  const isSelected = selectedEntry?.date === iso;
 
-              return (
-                <motion.button
-                  key={iso}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => handleDateTap(day)}
-                  className={`relative aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${isSelected
-                    ? "bg-primary text-primary-foreground"
-                    : isToday
-                      ? "bg-muted text-foreground"
-                      : "text-foreground hover:bg-muted/60"
-                    }`}
-                >
-                  {day.getDate()}
-                  {hasEntry && !isSelected && (
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
-                  )}
-                </motion.button>
-              );
-            })}
-          </div>
+                  return (
+                    <motion.button
+                      key={iso}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleDateTap(day)}
+                      className={`relative aspect-square flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200 ${isSelected
+                        ? "bg-primary text-primary-foreground"
+                        : isToday
+                          ? "bg-muted text-foreground"
+                          : "text-foreground hover:bg-muted/60"
+                        }`}
+                    >
+                      {day.getDate()}
+                      {hasEntry && !isSelected && (
+                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
+                      )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Selected entry detail */}

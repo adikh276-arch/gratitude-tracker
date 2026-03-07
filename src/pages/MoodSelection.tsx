@@ -28,23 +28,31 @@ const MoodSelection = () => {
   const location = useLocation();
   const { gratitude1, gratitude2, date, editId } = (location.state as any) || {};
   const [selected, setSelected] = useState<MoodOption | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   if (!gratitude1) {
     navigate("/");
     return null;
   }
 
-  const handleSave = () => {
-    if (!selected) return;
-    const entry = {
-      id: editId || v4(),
-      date: date || todayISO(),
-      gratitude1,
-      gratitude2: gratitude2 || undefined,
-      mood: selected,
-    };
-    saveEntry(entry);
-    navigate("/review", { state: { entryId: entry.id, entryDate: entry.date } });
+  const handleSave = async () => {
+    if (!selected || isSaving) return;
+    setIsSaving(true);
+    try {
+      const entry = {
+        id: editId || v4(),
+        date: date || todayISO(),
+        gratitude1,
+        gratitude2: gratitude2 || undefined,
+        mood: selected,
+      };
+      await saveEntry(entry);
+      navigate("/review", { state: { entryId: entry.id, entryDate: entry.date } });
+    } catch (error) {
+      console.error("Save error:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -83,10 +91,17 @@ const MoodSelection = () => {
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-background/80 backdrop-blur-md px-5 py-4 safe-bottom border-t border-border/50 z-10">
           <button
             onClick={handleSave}
-            disabled={!selected}
-            className="w-full h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-105 shadow-md"
+            disabled={!selected || isSaving}
+            className="w-full h-[52px] rounded-pill bg-primary text-primary-foreground font-heading font-medium text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98] hover:brightness-105 shadow-md flex items-center justify-center gap-2"
           >
-            {t("mood.save")}
+            {isSaving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                {t("mood.saving", "Saving...")}
+              </>
+            ) : (
+              t("mood.save")
+            )}
           </button>
         </div>
       </div>

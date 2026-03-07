@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -10,13 +11,31 @@ const ReviewEntry = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { entryId, entryDate } = (location.state as any) || {};
+  const [entry, setEntry] = useState<GEntry | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const entry: GEntry | undefined = getAllEntries().find(
-    (e) => e.id === entryId || e.date === entryDate
-  );
+  useEffect(() => {
+    const fetchEntry = async () => {
+      const entries = await getAllEntries();
+      const found = entries.find((e) => e.id === entryId || e.date === entryDate);
+      setEntry(found || null);
+      setIsLoading(false);
+      if (!found && !isLoading) {
+        navigate("/");
+      }
+    };
+    fetchEntry();
+  }, [entryId, entryDate, navigate]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!entry) {
-    navigate("/");
     return null;
   }
 

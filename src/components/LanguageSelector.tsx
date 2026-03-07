@@ -30,7 +30,7 @@ const languages = [
     { code: "tl", name: "Filipino" },
 ];
 
-export function LanguageSelector() {
+export default function LanguageSelector() {
     const { i18n } = useTranslation();
 
     const changeLanguage = (lang: string) => {
