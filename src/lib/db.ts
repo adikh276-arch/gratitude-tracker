@@ -1,13 +1,16 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { Pool } from "@neondatabase/serverless";
 
-// Optional: you can set this if needed, but it should work automatically in browsers
-// neonConfig.wsProxy = ...
+const connectionString = import.meta.env.VITE_DATABASE_URL;
+
+if (!connectionString) {
+    console.warn("VITE_DATABASE_URL is missing! Database queries will likely fail.");
+}
 
 export const pool = new Pool({
-    connectionString: import.meta.env.VITE_DATABASE_URL || process.env.DATABASE_URL,
+    connectionString: connectionString || "",
 });
 
-export const query = (text: string, params?: any[]) => {
+export const query = async (text: string, params?: any[]) => {
     return pool.query(text, params);
 };
 
