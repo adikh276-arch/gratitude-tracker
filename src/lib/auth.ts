@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createUserIfNotExists } from "./db";
 
 interface UserInfo {
@@ -7,6 +8,7 @@ interface UserInfo {
 
 export const useAuthHandshake = () => {
     const [isAuthResolved, setIsAuthResolved] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleAuth = async () => {
@@ -21,7 +23,7 @@ export const useAuthHandshake = () => {
             const token = params.get("token");
 
             if (!token) {
-                window.location.href = "/token";
+                navigate("/token");
                 return;
             }
 
@@ -48,16 +50,16 @@ export const useAuthHandshake = () => {
 
                     setIsAuthResolved(true);
                 } else {
-                    window.location.href = "/token";
+                    navigate("/token");
                 }
             } catch (error) {
                 console.error("Auth error:", error);
-                window.location.href = "/token";
+                navigate("/token");
             }
         };
 
         handleAuth();
-    }, []);
+    }, [navigate]);
 
     return { isAuthResolved };
 };
