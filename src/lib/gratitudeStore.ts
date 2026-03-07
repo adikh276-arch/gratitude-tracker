@@ -23,6 +23,12 @@ export const MOODS: MoodOption[] = [
 
 const getUserId = () => sessionStorage.getItem("user_id");
 
+const formatDate = (dateValue: any): string => {
+  if (!dateValue) return "";
+  const d = dateValue instanceof Date ? dateValue : new Date(dateValue);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 export async function saveEntry(entry: GratitudeEntry): Promise<void> {
   const userId = getUserId();
   if (!userId) throw new Error("Unauthorized");
@@ -49,7 +55,7 @@ export async function getAllEntries(): Promise<GratitudeEntry[]> {
   const result = await query("SELECT * FROM gratitude_entries WHERE user_id = $1 ORDER BY date DESC", [userId]);
   return result.rows.map(row => ({
     id: row.id,
-    date: row.date.toISOString().split("T")[0],
+    date: formatDate(row.date),
     gratitude1: row.gratitude1,
     gratitude2: row.gratitude2,
     mood: { emoji: row.mood_emoji, label: row.mood_label }
@@ -66,7 +72,7 @@ export async function getEntryById(id: string): Promise<GratitudeEntry | undefin
   const row = result.rows[0];
   return {
     id: row.id,
-    date: row.date.toISOString().split("T")[0],
+    date: formatDate(row.date),
     gratitude1: row.gratitude1,
     gratitude2: row.gratitude2,
     mood: { emoji: row.mood_emoji, label: row.mood_label }
@@ -83,7 +89,7 @@ export async function getEntryByDate(date: string): Promise<GratitudeEntry | und
   const row = result.rows[0];
   return {
     id: row.id,
-    date: row.date.toISOString().split("T")[0],
+    date: formatDate(row.date),
     gratitude1: row.gratitude1,
     gratitude2: row.gratitude2,
     mood: { emoji: row.mood_emoji, label: row.mood_label }
@@ -104,7 +110,7 @@ export async function getEntriesForMonth(year: number, month: number): Promise<G
 
   return result.rows.map(row => ({
     id: row.id,
-    date: row.date.toISOString().split("T")[0],
+    date: formatDate(row.date),
     gratitude1: row.gratitude1,
     gratitude2: row.gratitude2,
     mood: { emoji: row.mood_emoji, label: row.mood_label }
@@ -112,5 +118,6 @@ export async function getEntriesForMonth(year: number, month: number): Promise<G
 }
 
 export function todayISO(): string {
-  return new Date().toISOString().split("T")[0];
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
