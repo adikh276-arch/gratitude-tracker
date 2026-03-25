@@ -26,7 +26,7 @@ const getUserId = () => sessionStorage.getItem("user_id");
 const formatDate = (dateValue: any): string => {
   if (!dateValue) return "";
   const d = dateValue instanceof Date ? dateValue : new Date(dateValue);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 };
 
 export async function saveEntry(entry: GratitudeEntry): Promise<void> {
