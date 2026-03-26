@@ -17,7 +17,9 @@ const ReviewEntry = () => {
   useEffect(() => {
     const fetchEntry = async () => {
       const entries = await getAllEntries();
-      const found = entries.find((e) => e.id === entryId || e.date === entryDate);
+      const found = entryId 
+        ? entries.find((e) => e.id === entryId) || entries.find((e) => e.date === entryDate)
+        : entries.find((e) => e.date === entryDate);
       setEntry(found || null);
       setIsLoading(false);
       if (!found && !isLoading) {

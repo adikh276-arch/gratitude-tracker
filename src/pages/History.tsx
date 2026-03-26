@@ -49,7 +49,12 @@ const History = () => {
 
   const entryDates = useMemo(() => {
     const map = new Map<string, GratitudeEntry>();
-    entries.forEach((e) => map.set(e.date, e));
+    // Since entries are ordered by created_at DESC, the first one we encounter for a date is the newest
+    entries.forEach((e) => {
+      if (!map.has(e.date)) {
+        map.set(e.date, e);
+      }
+    });
     return map;
   }, [entries]);
 

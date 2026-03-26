@@ -52,7 +52,7 @@ export async function getAllEntries(): Promise<GratitudeEntry[]> {
   const userId = getUserId();
   if (!userId) return [];
 
-  const result = await query("SELECT * FROM gratitude_entries WHERE user_id = $1 ORDER BY date DESC", [userId]);
+  const result = await query("SELECT * FROM gratitude_entries WHERE user_id = $1 ORDER BY date DESC, created_at DESC", [userId]);
   return result.rows.map(row => ({
     id: row.id,
     date: formatDate(row.date),
@@ -83,7 +83,7 @@ export async function getEntryByDate(date: string): Promise<GratitudeEntry | und
   const userId = getUserId();
   if (!userId) return undefined;
 
-  const result = await query("SELECT * FROM gratitude_entries WHERE date = $1 AND user_id = $2", [date, userId]);
+  const result = await query("SELECT * FROM gratitude_entries WHERE date = $1 AND user_id = $2 ORDER BY created_at DESC", [date, userId]);
   if (result.rows.length === 0) return undefined;
 
   const row = result.rows[0];
@@ -104,7 +104,7 @@ export async function getEntriesForMonth(year: number, month: number): Promise<G
   const endDate = `${year}-${String(month + 1).padStart(2, "0")}-31`;
 
   const result = await query(
-    "SELECT * FROM gratitude_entries WHERE user_id = $1 AND date >= $2 AND date <= $3 ORDER BY date ASC",
+    "SELECT * FROM gratitude_entries WHERE user_id = $1 AND date >= $2 AND date <= $3 ORDER BY date ASC, created_at DESC",
     [userId, startDate, endDate]
   );
 
