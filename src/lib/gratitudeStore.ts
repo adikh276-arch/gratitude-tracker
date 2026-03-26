@@ -25,8 +25,13 @@ const getUserId = () => sessionStorage.getItem("user_id");
 
 const formatDate = (dateValue: any): string => {
   if (!dateValue) return "";
-  const d = dateValue instanceof Date ? dateValue : new Date(dateValue);
-  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+  // If it's a string from PG, it might be YYYY-MM-DD. 
+  // Appending T00:00:00 ensures new Date() parses it as local midnight, not UTC.
+  const d = dateValue instanceof Date 
+    ? dateValue 
+    : new Date(dateValue.toString().includes("T") ? dateValue : `${dateValue}T00:00:00`);
+  
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
 export async function saveEntry(entry: GratitudeEntry): Promise<void> {
